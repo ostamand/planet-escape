@@ -8,11 +8,13 @@ public class ConRobot : MonoBehaviour
 {
     // delay between start of animation & firing projectile
     public float delayProjectile = 0.4f;
+    // firing speed = total animation time
     public float fireSpeed = 1.167f;
 
     private Animator _animator;
     private SpawnProjectiles _projectiles;
     private bool _shooting = false;
+    private bool _crouching = false;
     private float _timeToFire = 0;
    
     void Start()
@@ -23,8 +25,9 @@ public class ConRobot : MonoBehaviour
 
 	void Update()
 	{
-        // for dev only
-		if (Input.GetKeyDown(KeyCode.Space) && !_shooting)
+        // for dev only, shooting
+
+		if (Input.GetKeyDown(KeyCode.Space) && !_shooting && !_crouching)
 		{
             SetShooting(true);
 		}
@@ -32,8 +35,26 @@ public class ConRobot : MonoBehaviour
         {
             SetShooting(false);
         }
+
+        // for dev only, crouching
+
+        if (Input.GetKeyDown(KeyCode.DownArrow) && !_crouching)
+        {
+            SetCrouching(true);
+        }
+        else if (Input.GetKeyUp(KeyCode.DownArrow) && _crouching)
+        {
+            SetCrouching(false);
+        }
+
         ProcessFiring();
 	}
+
+    void SetCrouching(bool isCrouching)
+    {
+        _crouching = isCrouching;
+        _animator.SetBool("Crouching", _crouching);
+    }
 
     void SetShooting(bool isShooting)
     {
