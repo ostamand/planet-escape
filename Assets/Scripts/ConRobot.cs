@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,11 +11,15 @@ public class ConRobot : MonoBehaviour
     public float delayProjectile = 0.4f;
     // firing speed = total animation time
     public float fireSpeed = 1.167f;
+    public float walkSpeed = 1.0f;
 
     private Animator _animator;
     private SpawnProjectiles _projectiles;
+
     private bool _shooting = false;
     private bool _crouching = false;
+    private bool _walking = false;
+
     private float _timeToFire = 0;
    
     void Start()
@@ -27,7 +32,7 @@ public class ConRobot : MonoBehaviour
 	{
         // for dev only, shooting
 
-		if (Input.GetKeyDown(KeyCode.Space) && !_shooting && !_crouching)
+		if (Input.GetKeyDown(KeyCode.Space) && !IsMoving())
 		{
             SetShooting(true);
 		}
@@ -38,7 +43,7 @@ public class ConRobot : MonoBehaviour
 
         // for dev only, crouching
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) && !_crouching)
+        if (Input.GetKeyDown(KeyCode.DownArrow) && !IsMoving())
         {
             SetCrouching(true);
         }
@@ -47,8 +52,31 @@ public class ConRobot : MonoBehaviour
             SetCrouching(false);
         }
 
+        if (Input.GetKeyDown(KeyCode.UpArrow) && !IsMoving())
+        {
+            Debug.Log("Running true");
+            SetWalking(true);
+        }
+        else if (Input.GetKeyUp(KeyCode.UpArrow) && _walking)
+        {
+            Debug.Log("Running false");
+            SetWalking(false);
+        }
+
         ProcessFiring();
+        ProcessWalking();
 	}
+
+    public bool IsMoving()
+    {
+        return _crouching || _walking;
+    }
+
+    void SetWalking(bool isRunning)
+    {
+        _walking = isRunning;
+        _animator.SetBool("Walking", _walking);
+    }
 
     void SetCrouching(bool isCrouching)
     {
@@ -71,5 +99,19 @@ public class ConRobot : MonoBehaviour
             _projectiles.Fire();
             _timeToFire = Time.time + fireSpeed + delayProjectile;
         }
+    }
+
+    void ProcessWalking()
+    {
+        if (!_walking) { return; }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            transform.Translate(Vector3.forward * Time.deltaTime * walkSpeed);
+        }
+    }
+
+    private void OnAnimatorMove()
+    {
+        
     }
 }
