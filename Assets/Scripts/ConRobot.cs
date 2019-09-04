@@ -12,6 +12,7 @@ public class ConRobot : MonoBehaviour
     // firing speed = total animation time
     public float fireSpeed = 1.167f;
     public float walkSpeed = 1.0f;
+    public float rotateSpeed = 1.0f;
 
     private Animator _animator;
     private SpawnProjectiles _projectiles;
@@ -22,6 +23,7 @@ public class ConRobot : MonoBehaviour
 
     private float _timeToFire = 0;
 
+    private Queue<TimedAction> _actionsQueue = new Queue<TimedAction>();
 
     #region Public Properties
 
@@ -61,30 +63,19 @@ public class ConRobot : MonoBehaviour
 	{
 		_animator = GetComponent<Animator>();
         _projectiles = GetComponent<SpawnProjectiles>();
-	}
 
-    void ActionUntilRelease(KeyCode key, Action<bool> setState)
-    {
-        if (Input.GetKeyDown(key) && !IsMoving())
-        {
-            setState(true);
-        }
-        else if (Input.GetKeyUp(key))
-        {
-            setState(false);
-        }
+        ShootLeft();
     }
 
-	void Update()
-	{
+    void Update()
+    { 
         // for dev
+        // ActionUntilRelease(KeyCode.Space, value => Shooting = value);
 
-        ActionUntilRelease(KeyCode.Space, value => Shooting = value);
+        // ActionUntilRelease(KeyCode.DownArrow, value => Crouching = value);
 
-        ActionUntilRelease(KeyCode.DownArrow, value => Crouching = value);
-
-
-        if (Input.GetKeyDown(KeyCode.UpArrow) && !IsMoving())
+        /*
+        if (Input.GetKeyDown(KeyCode.UpArrow) && !IsNotIdle())
         {
             Debug.Log("Running true");
             SetWalking(true);
@@ -94,26 +85,37 @@ public class ConRobot : MonoBehaviour
             Debug.Log("Running false");
             SetWalking(false);
         }
+        */
 
-        ProcessFiring();
-        ProcessWalking();
-	}
+        ProcessActions();
 
-    public bool IsMoving()
-    {
-        return _crouching || _walking;
+        // ProcessFiring();
+        // ProcessWalking();
     }
 
-    void SetWalking(bool isRunning)
+    #region Private Helpers
+
+    void ActionUntilRelease(KeyCode key, Action<bool> setState)
     {
-        _walking = isRunning;
-        _animator.SetBool("Walking", _walking);
+        if (Input.GetKeyDown(key) && !IsNotIdle())
+        {
+            setState(true);
+        }
+        else if (Input.GetKeyUp(key))
+        {
+            setState(false);
+        }
+    }
+
+    bool IsNotIdle()
+    {
+        return _crouching || _walking;
     }
 
     void ProcessFiring()
     {
         if (!_shooting) { return; }
-        if(Time.time > _timeToFire)
+        if (Time.time > _timeToFire)
         {
             _projectiles.Fire();
             _timeToFire = Time.time + fireSpeed + delayProjectile;
@@ -127,6 +129,70 @@ public class ConRobot : MonoBehaviour
         {
             transform.Translate(Vector3.forward * Time.deltaTime * walkSpeed);
         }
+    }
+
+    void ProcessActions()
+    {
+        if (_actionsQueue.Count == 0){return;}
+        TimedAction action = _actionsQueue.Peek();
+        if (action.Update(Time.deltaTime))
+        {
+            // action done. remove from queue
+            Debug.Log("done");
+            _actionsQueue.Dequeue();
+        }
+    }
+
+    void Rotate(float angle, float totalTime)
+    {
+        transform.Rotate(Vector3.up, Time.deltaTime * angle / totalTime );
+    }
+
+    void ShootLeft()
+    {
+        // make sure queue is empty
+        EmptyActionQueue();
+
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = true, 0f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Rotate(30f, 1f), 1f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = false, 0f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Shooting = true, 1.5f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Shooting = false, 0f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = true, 0f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Rotate(-30f, 1f), 1f)
+            );
+    }
+
+    void EmptyActionQueue()
+    {
+        _actionsQueue = new Queue<TimedAction>();
+    }
+
+    void AddToActionQueue(TimedAction action)
+    {
+        _actionsQueue.Enqueue(action);
+
+    }
+
+    #endregion
+
+    void SetWalking(bool isRunning)
+    {
+        _walking = isRunning;
+        _animator.SetBool("Walking", _walking);
     }
 
     private void OnAnimatorMove()
