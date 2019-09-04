@@ -21,36 +21,68 @@ public class ConRobot : MonoBehaviour
     private bool _walking = false;
 
     private float _timeToFire = 0;
-   
+
+
+    #region Public Properties
+
+    public bool Shooting
+    {
+        get
+        {
+            return _shooting;
+        }
+        set
+        {
+            _shooting = value;
+            _animator.SetBool("Shooting", value);
+            if (_shooting)
+            {
+                _timeToFire = Time.time + delayProjectile;
+            }
+        }
+    }
+
+    public bool Crouching
+    {
+        get
+        {
+            return _crouching;
+        }
+        set
+        {
+            _crouching = value;
+            _animator.SetBool("Crouching", value);
+        }
+    }
+
+    #endregion
+
     void Start()
 	{
 		_animator = GetComponent<Animator>();
         _projectiles = GetComponent<SpawnProjectiles>();
 	}
 
+    void ActionUntilRelease(KeyCode key, Action<bool> setState)
+    {
+        if (Input.GetKeyDown(key) && !IsMoving())
+        {
+            setState(true);
+        }
+        else if (Input.GetKeyUp(key))
+        {
+            setState(false);
+        }
+    }
+
 	void Update()
 	{
-        // for dev only, shooting
+        // for dev
 
-		if (Input.GetKeyDown(KeyCode.Space) && !IsMoving())
-		{
-            SetShooting(true);
-		}
-        else if (Input.GetKeyUp(KeyCode.Space) && _shooting)
-        {
-            SetShooting(false);
-        }
+        ActionUntilRelease(KeyCode.Space, value => Shooting = value);
 
-        // for dev only, crouching
+        ActionUntilRelease(KeyCode.DownArrow, value => Crouching = value);
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) && !IsMoving())
-        {
-            SetCrouching(true);
-        }
-        else if (Input.GetKeyUp(KeyCode.DownArrow) && _crouching)
-        {
-            SetCrouching(false);
-        }
 
         if (Input.GetKeyDown(KeyCode.UpArrow) && !IsMoving())
         {
@@ -76,19 +108,6 @@ public class ConRobot : MonoBehaviour
     {
         _walking = isRunning;
         _animator.SetBool("Walking", _walking);
-    }
-
-    void SetCrouching(bool isCrouching)
-    {
-        _crouching = isCrouching;
-        _animator.SetBool("Crouching", _crouching);
-    }
-
-    void SetShooting(bool isShooting)
-    {
-        _shooting = isShooting;
-        _animator.SetBool("Shooting", _shooting);
-        _timeToFire = Time.time + delayProjectile;
     }
 
     void ProcessFiring()
