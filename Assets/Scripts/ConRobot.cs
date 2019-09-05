@@ -12,9 +12,9 @@ public class ConRobot : MonoBehaviour
     // firing speed = total animation time
     public float fireSpeed = 1.167f;
     public float walkSpeed = 1.0f;
-    public float rotateSpeed = 1.0f;
 
     private Animator _animator;
+
     private SpawnProjectiles _projectiles;
 
     private bool _shooting = false;
@@ -60,14 +60,14 @@ public class ConRobot : MonoBehaviour
         }
     }
 
+    public Vector3 ShootingDirection { get; set; }
+
     #endregion
 
     void Start()
 	{
 		_animator = GetComponent<Animator>();
         _projectiles = GetComponent<SpawnProjectiles>();
-
-        ShootLeft(2);
     }
 
     void Update()
@@ -120,7 +120,7 @@ public class ConRobot : MonoBehaviour
         if (!_shooting) { return; }
         if (Time.time > _timeToFire)
         {
-            _projectiles.Fire();
+            _projectiles.Fire(ShootingDirection);
             _timeToFire = Time.time + fireSpeed + delayProjectile;
         }
     }
@@ -141,7 +141,6 @@ public class ConRobot : MonoBehaviour
         if (action.Update(Time.deltaTime))
         {
             // action done. remove from queue
-            Debug.Log("done");
             _actionsQueue.Dequeue();
         }
     }
@@ -151,32 +150,16 @@ public class ConRobot : MonoBehaviour
         transform.Rotate(Vector3.up, Time.deltaTime * angle / totalTime );
     }
 
-    void ShootLeft(int numberOfShots)
+    void ShootForward()
     {
-        // make sure queue is empty
-        EmptyActionQueue();
+        ShootingDirection = transform.forward;
+        Shooting = true;
+    }
 
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = true, 0f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Rotate(30f, 1f), 1f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = false, 0.2f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Shooting = true, fireSpeed * numberOfShots)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Shooting = false, 0.2f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = true, 0f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Rotate(-30f, 1f), 1f)
-            );
+    void ShootTarget(Vector3 target)
+    {
+        ShootingDirection = (target - transform.position).normalized;
+        Shooting = true;
     }
 
     void EmptyActionQueue()
@@ -188,6 +171,38 @@ public class ConRobot : MonoBehaviour
     {
         _actionsQueue.Enqueue(action);
 
+    }
+
+    #endregion
+
+    #region Public Helpers
+
+    public void StartShooting(Vector3 target, int numberOfShots)
+    {
+        // make sure queue is empty
+        EmptyActionQueue();
+
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = true, 1.0f)
+            );
+        //AddToActionQueue(
+        //    new TimedAction(deltaTime => Rotate(30f, 0.5f), 0.5f)
+        //    );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = false, 0.75f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => ShootTarget(target), fireSpeed * numberOfShots)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Shooting = false, 0.2f)
+            );
+        AddToActionQueue(
+            new TimedAction(deltaTime => Crouching = true, 0f)
+            );
+        //AddToActionQueue(
+        //    new TimedAction(deltaTime => Rotate(-30f, 0.5f), 0.5f)
+        //    );
     }
 
     #endregion

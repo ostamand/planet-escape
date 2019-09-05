@@ -30,16 +30,17 @@ public class SpawnProjectiles : MonoBehaviour
         */
     }
 
-    public void Fire()
+    public void Fire(Vector3 direction)
     {
-        SpawnVFX();
+        SpawnVFX(direction);
     }
 
-    private void SpawnVFX()
+    private void SpawnVFX(Vector3 direction)
     {
         if (firePoint != null)
         {
-            Instantiate(_effectToSpawn, firePoint.transform.position, Quaternion.identity);
+            GameObject bullet = Instantiate(_effectToSpawn, firePoint.transform.position, Quaternion.identity);
+            bullet.GetComponent<ProjectileMove>().Direction = direction;
         }
     }
 }
