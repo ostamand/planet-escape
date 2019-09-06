@@ -18,18 +18,6 @@ public class SpawnProjectiles : MonoBehaviour
         _fireRate = _effectToSpawn.GetComponent<ProjectileMove>().fireRate;
     }
 
-    private void Update()
-    {
-        /*
-        ConRobot.RobotState state = gameObject.GetComponent<ConRobot>().CurrentState;
-        if (state == ConRobot.RobotState.Shooting && Time.time >= _timeToFire)
-        {
-            _timeToFire = Time.time + 1 / _fireRate;
-            SpawnVFX();
-        }
-        */
-    }
-
     public void Fire(Vector3 direction)
     {
         SpawnVFX(direction);

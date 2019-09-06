@@ -6,8 +6,16 @@ public abstract class ActionCharacter : MonoBehaviour
 {
     protected Queue<TimedStep> _stepsQueue = new Queue<TimedStep>();
 
-    protected string _previousActionName;
-    protected string _currentActionName;
+    protected string _previousActionName = "";
+    protected string _currentActionName = "";
+
+    public string PreviousActionName
+    {
+        get
+        {
+            return _previousActionName;
+        }
+    }
 
     protected void AddToActionQueue(TimedStep action)
     {
@@ -53,5 +61,7 @@ public abstract class ActionCharacter : MonoBehaviour
         if (_stepsQueue.Count > 0) { return false; }
         return true;
     }
+
+
 
 }

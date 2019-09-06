@@ -10,11 +10,6 @@ public class ProjectileMove : MonoBehaviour
 
     public Vector3 Direction { get; set; }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if(speed > 0){

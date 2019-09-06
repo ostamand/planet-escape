@@ -8,13 +8,18 @@ public class ConFightController : MonoBehaviour
     public List<GameObject> Cops = new List<GameObject>();
     public List<GameObject> Cons = new List<GameObject>();
 
-    public static readonly string[] ConActions = { "Idle", "Shoot0", "Shoot1" };
+    public Dictionary<string, string> ConActions = new Dictionary<string, string>
+    {
+        { "Idle", "Idle"},
+        { "Shoot0", "Shoot0"},
+        { "Shoot1", "Shoot1"}
+    };
 
     void Start()
     {
         GameObject con = Cons[0];
         ShooterController controller = con.GetComponent<ShooterController>();
-        controller.StartShooting(Cops[0].transform.position, 2, ConActions[2]);
+        controller.StartShooting(Cops[0].transform.position, 2, ConActions["Idle"]);
     }
 
     void Update()
@@ -33,6 +38,20 @@ public class ConFightController : MonoBehaviour
     protected void SetNextConAction(ShooterController controller)
     {
         // do nothing, shoot cop #0, shoot cop #2 
-        float[] probs = { 0, 0, 0 };
+        float[] probs = { 0.3f, 0.1f, 0.1f};
+
+        // more chance of doing something if we were idle before
+        if(controller.PreviousActionName == ConActions["Idle"])
+        {
+            probs[1] += 0.2f;
+            probs[2] += 0.2f;
+        }
+
+        // more chance of shooting if target is standing up
+
+
+
+
+
     }
 }
