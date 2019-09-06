@@ -8,39 +8,58 @@ public class ConFightController : MonoBehaviour
     public List<GameObject> Cops = new List<GameObject>();
     public List<GameObject> Cons = new List<GameObject>();
 
+    public List<AgentShootController> _copsControllers;
+    public List<AutoShootController>  _consControllers;
+
     public Dictionary<string, string> ConActions = new Dictionary<string, string>
-    {
-        { "Idle", "Idle"},
+    { 
         { "Shoot0", "Shoot0"},
-        { "Shoot1", "Shoot1"}
+        { "Shoot1", "Shoot1"},
+        { "Idle", "Idle"}
     };
 
     void Start()
     {
-        GameObject con = Cons[0];
-        ShooterController controller = con.GetComponent<ShooterController>();
+        // get controllers
+        _consControllers = new List<AutoShootController>();
+        foreach(GameObject con in Cons)
+        {
+            _consControllers.Add(con.GetComponent<AutoShootController>());
+        }
+        _copsControllers = new List<AgentShootController>();
+        foreach(GameObject cop in Cops)
+        {
+            _copsControllers.Add(cop.GetComponent<AgentShootController>());
+        }
+
+        GameObject test = Cons[0];
+        AutoShootController controller = test.GetComponent<AutoShootController>();
         controller.StartShooting(Cops[0].transform.position, 2, ConActions["Idle"]);
     }
 
     void Update()
     {
         // start by the cons
-        foreach(GameObject con in Cons)
+        for (int i = 0; i < Cops.Count; i++)
         {
-            ShooterController controller = con.GetComponent<ShooterController>();
-            if (controller.CanRunAction())
+            AutoShootController controller = _consControllers[i];
+            if (controller.CanDoAction())
             {
                 SetNextConAction(controller);
             }
         }
+
+        // now the cops controlled by the agent
     }
 
-    protected void SetNextConAction(ShooterController controller)
+    protected void SetNextConAction(AutoShootController controller)
     {
-        // do nothing, shoot cop #0, shoot cop #2 
+        // shoot cop 0, shoot cop 1, do nothing
+
         float[] probs = { 0.3f, 0.1f, 0.1f};
 
         // more chance of doing something if we were idle before
+
         if(controller.PreviousActionName == ConActions["Idle"])
         {
             probs[1] += 0.2f;
@@ -48,6 +67,11 @@ public class ConFightController : MonoBehaviour
         }
 
         // more chance of shooting if target is standing up
+
+        for(int i = 0; i < Cops.Count; i++)
+        {
+            probs[i] = _copsControllers[i].Crouching ? probs[i] : probs[i] + 0.2f;
+        }
 
 
 

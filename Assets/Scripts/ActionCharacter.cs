@@ -8,6 +8,31 @@ public abstract class ActionCharacter : MonoBehaviour
 
     protected string _previousActionName = "";
     protected string _currentActionName = "";
+    protected bool _crouching = false;
+    private Animator _animator;
+
+    #region Public Properties
+
+    public Animator Animator
+    {
+        get
+        {
+            return _animator;
+        }
+    }
+
+    public bool Crouching
+    {
+        get
+        {
+            return _crouching;
+        }
+        set
+        {
+            _crouching = value;
+            _animator.SetBool("Crouching", value);
+        }
+    }
 
     public string PreviousActionName
     {
@@ -16,6 +41,25 @@ public abstract class ActionCharacter : MonoBehaviour
             return _previousActionName;
         }
     }
+
+    #endregion
+
+    #region Public Methods
+
+    public void Setup()
+    {
+        _animator = GetComponent<Animator>();
+    }
+
+    public bool CanDoAction()
+    {
+        if (_stepsQueue.Count > 0) { return false; }
+        return true;
+    }
+
+    #endregion
+
+    #region Pivate Helpers
 
     protected void AddToActionQueue(TimedStep action)
     {
@@ -56,12 +100,5 @@ public abstract class ActionCharacter : MonoBehaviour
         _currentActionName = actionName;
     }
 
-    public bool CanRunAction()
-    {
-        if (_stepsQueue.Count > 0) { return false; }
-        return true;
-    }
-
-
-
+    #endregion
 }

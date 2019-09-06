@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShooterController : ActionCharacter
+public class AutoShootController : ActionCharacter
 {
     // delay between start of animation & firing projectile
     public float delayProjectile = 0.4f;
@@ -10,12 +10,10 @@ public class ShooterController : ActionCharacter
     // firing speed = total animation time
     public float fireSpeed = 1.167f;
 
-    private Animator _animator;
-
     private SpawnProjectiles _projectiles;
 
     private bool _shooting = false;
-    private bool _crouching = false;
+   
     private float _timeToFire = 0;
 
     #region Public Properties
@@ -31,25 +29,12 @@ public class ShooterController : ActionCharacter
             if (_shooting != value)
             {
                 _shooting = value;
-                _animator.SetBool("Shooting", value);
+                Animator.SetBool("Shooting", value);
                 if (_shooting)
                 {
                     _timeToFire = Time.time + delayProjectile;
                 }
             }
-        }
-    }
-
-    public bool Crouching
-    {
-        get
-        {
-            return _crouching;
-        }
-        set
-        {
-            _crouching = value;
-            _animator.SetBool("Crouching", value);
         }
     }
 
@@ -59,7 +44,7 @@ public class ShooterController : ActionCharacter
 
     void Start()
 	{
-		_animator = GetComponent<Animator>();
+        Setup();
         _projectiles = GetComponent<SpawnProjectiles>();
     }
 
