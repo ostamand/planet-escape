@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ShooterController : ActionCharacter
@@ -118,25 +119,17 @@ public class ShooterController : ActionCharacter
 
     #region Public Helpers
 
-    public void StartShooting(Vector3 target, int numberOfShots)
+    public void StartShooting(Vector3 target, int numberOfShots, string actionName)
     {
-        EmptyActionQueue();
-
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = true, 1.0f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = false, 0.75f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => ShootTarget(target), fireSpeed * numberOfShots)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Shooting = false, 0.2f)
-            );
-        AddToActionQueue(
-            new TimedAction(deltaTime => Crouching = true, 0f)
-            );
+        List<TimedStep> steps = new List<TimedStep>
+        {
+            new TimedStep(deltaTime => Crouching = true, 1.0f),
+            new TimedStep(deltaTime => Crouching = false, 0.75f),
+            new TimedStep(deltaTime => ShootTarget(target), fireSpeed * numberOfShots),
+            new TimedStep(deltaTime => Shooting = false, 0.2f),
+            new TimedStep(deltaTime => Crouching = true, 0f)
+        };
+        AddTimedAction(steps, actionName);
     }
 
     #endregion

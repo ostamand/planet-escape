@@ -1,12 +1,12 @@
 ﻿using System;
 
-public class TimedAction
+public class TimedStep
 {
     private Action<float> _updateAction;
     private float _totalTime;
     private float _runTime = 0;
 
-    public TimedAction(Action<float> updateAction, float totalTime)
+    public TimedStep(Action<float> updateAction, float totalTime)
     {
         _updateAction = updateAction;
         _totalTime = totalTime;

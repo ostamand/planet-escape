@@ -1,30 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+
 public abstract class ActionCharacter : MonoBehaviour
 {
-    protected Queue<TimedAction> _actionsQueue = new Queue<TimedAction>();
+    protected Queue<TimedStep> _stepsQueue = new Queue<TimedStep>();
 
-    protected void AddToActionQueue(TimedAction action)
+    protected string _previousActionName;
+    protected string _currentActionName;
+
+    protected void AddToActionQueue(TimedStep action)
     {
-        _actionsQueue.Enqueue(action);
+        _stepsQueue.Enqueue(action);
 
     }
 
-    protected void EmptyActionQueue()
+    protected void EmptyStepsQueue()
     {
-        _actionsQueue = new Queue<TimedAction>();
+        _stepsQueue = new Queue<TimedStep>();
     }
 
     protected void ProcessActions()
     {
-        if (_actionsQueue.Count == 0) { return; }
-        TimedAction action = _actionsQueue.Peek();
+        if (_stepsQueue.Count == 0) { return; }
+        TimedStep action = _stepsQueue.Peek();
         if (action.Update(Time.deltaTime))
         {
-            // action done. remove from queue
-            _actionsQueue.Dequeue();
+            // step done. remove from queue
+            _stepsQueue.Dequeue();
+
+            // check if all actions are done
+            if(_stepsQueue.Count == 0)
+            {
+                _previousActionName = _currentActionName;
+                _currentActionName = string.Empty;
+            }
         }
+    }
+
+    protected void AddTimedAction(List<TimedStep> steps, string actionName)
+    {
+        EmptyStepsQueue();
+        foreach (TimedStep step in steps)
+        {
+            _stepsQueue.Enqueue(step);
+        }
+        _currentActionName = actionName;
+    }
+
+    public bool CanRunAction()
+    {
+        if (_stepsQueue.Count > 0) { return false; }
+        return true;
     }
 
 }
