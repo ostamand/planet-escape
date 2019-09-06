@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+using Character = ActionCharacter;
 
 public class ConFightController : MonoBehaviour
 {
@@ -10,13 +11,6 @@ public class ConFightController : MonoBehaviour
 
     public List<AgentShootController> _copsControllers;
     public List<AutoShootController>  _consControllers;
-
-    public Dictionary<string, string> ConActions = new Dictionary<string, string>
-    { 
-        { "Shoot0", "Shoot0"},
-        { "Shoot1", "Shoot1"},
-        { "Idle", "Idle"}
-    };
 
     void Start()
     {
@@ -34,7 +28,7 @@ public class ConFightController : MonoBehaviour
 
         GameObject test = Cons[0];
         AutoShootController controller = test.GetComponent<AutoShootController>();
-        controller.StartShooting(Cops[0].transform.position, 2, ConActions["Idle"]);
+        controller.StartShooting(Cops[0].transform.position, 2, Character.ActionLabels[Character.Action.Shoot0]);
     }
 
     void Update()
@@ -60,7 +54,7 @@ public class ConFightController : MonoBehaviour
 
         // more chance of doing something if we were idle before
 
-        if(controller.PreviousActionName == ConActions["Idle"])
+        if(controller.PreviousActionName == Character.ActionLabels[Character.Action.Idle])
         {
             probs[1] += 0.2f;
             probs[2] += 0.2f;
@@ -73,9 +67,22 @@ public class ConFightController : MonoBehaviour
             probs[i] = _copsControllers[i].Crouching ? probs[i] : probs[i] + 0.2f;
         }
 
+        float total = probs.Sum();
+        probs = (float[])probs.Select(f => f / total);
 
+        float choice = Random.value;
+        float lowerBound = 0f;
+        Character.Action nextAction = Character.Action.Idle;
 
+        for(int i=0; i < Character.ActionLabels.Count; i++)
+        {
+            if (choice >= lowerBound && choice < probs[i])
+            {
+                nextAction = Character.IndexToAction[i];
+                break;
+            }
+        }
 
-
+        controller.RunAction(nextAction);
     }
 }

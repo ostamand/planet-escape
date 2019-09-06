@@ -104,6 +104,11 @@ public class AutoShootController : ActionCharacter
 
     #region Public Helpers
 
+    public override void RunAction(Action action)
+    {
+        base.RunAction(action);
+    }
+
     public void StartShooting(Vector3 target, int numberOfShots, string actionName)
     {
         List<TimedStep> steps = new List<TimedStep>

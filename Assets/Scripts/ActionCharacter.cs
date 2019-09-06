@@ -9,17 +9,24 @@ public abstract class ActionCharacter : MonoBehaviour
     protected string _previousActionName = "";
     protected string _currentActionName = "";
     protected bool _crouching = false;
-    private Animator _animator;
+
+    public enum Action { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
+    public static Dictionary<Action, string> ActionLabels = new Dictionary<Action, string>
+    {
+        { Action.Shoot0, "Shoot0"},
+        { Action.Shoot1, "Shoot1"},
+        { Action.Idle, "Idle"}
+    };
+    public static Dictionary<int, Action> IndexToAction = new Dictionary<int, Action>
+    {
+        { 0, Action.Shoot0},
+        { 1, Action.Shoot1},
+        { 2, Action.Idle}
+    };
 
     #region Public Properties
 
-    public Animator Animator
-    {
-        get
-        {
-            return _animator;
-        }
-    }
+    public Animator Animator { get; private set; }
 
     public bool Crouching
     {
@@ -30,7 +37,7 @@ public abstract class ActionCharacter : MonoBehaviour
         set
         {
             _crouching = value;
-            _animator.SetBool("Crouching", value);
+            Animator.SetBool("Crouching", value);
         }
     }
 
@@ -48,13 +55,18 @@ public abstract class ActionCharacter : MonoBehaviour
 
     public void Setup()
     {
-        _animator = GetComponent<Animator>();
+        Animator = GetComponent<Animator>();
     }
 
     public bool CanDoAction()
     {
         if (_stepsQueue.Count > 0) { return false; }
         return true;
+    }
+
+    public virtual void RunAction(Action action)
+    {
+
     }
 
     #endregion
