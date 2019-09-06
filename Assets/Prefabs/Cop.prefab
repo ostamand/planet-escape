@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1984175336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603536338919384825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df85688fcedb4780b9d577ceb38fcd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delayProjectile: 0.4
+  fireSpeed: 1.167
 --- !u!1001 &604797371248190795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9,7 +23,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1298641209967538, guid: 80a5aa5d3c514d842841d031ae24d8e1, type: 3}
       propertyPath: m_Name
-      value: Character_Cop_01
+      value: Cop
       objectReference: {fileID: 0}
     - target: {fileID: 4665669730091544, guid: 80a5aa5d3c514d842841d031ae24d8e1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -57,3 +71,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80a5aa5d3c514d842841d031ae24d8e1, type: 3}
+--- !u!1 &603536338919384825 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1298641209967538, guid: 80a5aa5d3c514d842841d031ae24d8e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 604797371248190795}
+  m_PrefabAsset: {fileID: 0}

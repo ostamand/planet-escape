@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class ConRobot : ActionCharacter
+public class ShooterController : ActionCharacter
 {
     // delay between start of animation & firing projectile
     public float delayProjectile = 0.4f;
@@ -15,7 +15,6 @@ public class ConRobot : ActionCharacter
 
     private bool _shooting = false;
     private bool _crouching = false;
-
     private float _timeToFire = 0;
 
     #region Public Properties

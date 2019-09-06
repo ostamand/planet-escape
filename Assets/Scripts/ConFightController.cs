@@ -10,7 +10,7 @@ public class ConFightController : MonoBehaviour
     void Start()
     {
         GameObject con = Cons[0];
-        ConRobot controller = con.GetComponent<ConRobot>();
+        ShooterController controller = con.GetComponent<ShooterController>();
         controller.StartShooting(Cops[0].transform.position, 2);
     }
 
