@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
-
-public class ConRobot : MonoBehaviour
+public class ConRobot : ActionCharacter
 {
     // delay between start of animation & firing projectile
     public float delayProjectile = 0.4f;
+
     // firing speed = total animation time
     public float fireSpeed = 1.167f;
-    public float walkSpeed = 1.0f;
 
     private Animator _animator;
 
@@ -19,11 +15,8 @@ public class ConRobot : MonoBehaviour
 
     private bool _shooting = false;
     private bool _crouching = false;
-    private bool _walking = false;
 
     private float _timeToFire = 0;
-
-    private Queue<TimedAction> _actionsQueue = new Queue<TimedAction>();
 
     #region Public Properties
 
@@ -72,28 +65,8 @@ public class ConRobot : MonoBehaviour
 
     void Update()
     { 
-        // for dev
-        // ActionUntilRelease(KeyCode.Space, value => Shooting = value);
-
-        // ActionUntilRelease(KeyCode.DownArrow, value => Crouching = value);
-
-        /*
-        if (Input.GetKeyDown(KeyCode.UpArrow) && !IsNotIdle())
-        {
-            Debug.Log("Running true");
-            SetWalking(true);
-        }
-        else if (Input.GetKeyUp(KeyCode.UpArrow) && _walking)
-        {
-            Debug.Log("Running false");
-            SetWalking(false);
-        }
-        */
-
         ProcessActions();
         ProcessFiring();
-
-        // ProcessWalking();
     }
 
     #region Private Helpers
@@ -112,7 +85,7 @@ public class ConRobot : MonoBehaviour
 
     bool IsNotIdle()
     {
-        return _crouching || _walking;
+        return _crouching;
     }
 
     void ProcessFiring()
@@ -122,26 +95,6 @@ public class ConRobot : MonoBehaviour
         {
             _projectiles.Fire(ShootingDirection);
             _timeToFire = Time.time + fireSpeed + delayProjectile;
-        }
-    }
-
-    void ProcessWalking()
-    {
-        if (!_walking) { return; }
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            transform.Translate(Vector3.forward * Time.deltaTime * walkSpeed);
-        }
-    }
-
-    void ProcessActions()
-    {
-        if (_actionsQueue.Count == 0){return;}
-        TimedAction action = _actionsQueue.Peek();
-        if (action.Update(Time.deltaTime))
-        {
-            // action done. remove from queue
-            _actionsQueue.Dequeue();
         }
     }
 
@@ -162,32 +115,17 @@ public class ConRobot : MonoBehaviour
         Shooting = true;
     }
 
-    void EmptyActionQueue()
-    {
-        _actionsQueue = new Queue<TimedAction>();
-    }
-
-    void AddToActionQueue(TimedAction action)
-    {
-        _actionsQueue.Enqueue(action);
-
-    }
-
     #endregion
 
     #region Public Helpers
 
     public void StartShooting(Vector3 target, int numberOfShots)
     {
-        // make sure queue is empty
         EmptyActionQueue();
 
         AddToActionQueue(
             new TimedAction(deltaTime => Crouching = true, 1.0f)
             );
-        //AddToActionQueue(
-        //    new TimedAction(deltaTime => Rotate(30f, 0.5f), 0.5f)
-        //    );
         AddToActionQueue(
             new TimedAction(deltaTime => Crouching = false, 0.75f)
             );
@@ -200,21 +138,7 @@ public class ConRobot : MonoBehaviour
         AddToActionQueue(
             new TimedAction(deltaTime => Crouching = true, 0f)
             );
-        //AddToActionQueue(
-        //    new TimedAction(deltaTime => Rotate(-30f, 0.5f), 0.5f)
-        //    );
     }
 
     #endregion
-
-    void SetWalking(bool isRunning)
-    {
-        _walking = isRunning;
-        _animator.SetBool("Walking", _walking);
-    }
-
-    private void OnAnimatorMove()
-    {
-        
-    }
 }

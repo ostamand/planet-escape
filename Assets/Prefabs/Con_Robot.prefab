@@ -3781,7 +3781,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delayProjectile: 0.3
   fireSpeed: 0.85
-  walkSpeed: 3.5
 --- !u!114 &384661715
 MonoBehaviour:
   m_ObjectHideFlags: 0
