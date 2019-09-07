@@ -23,14 +23,17 @@ public class AutoShootController : MonoBehaviour
     [Space(10)]
 
     [SerializeField]
-    private List<AgentShootController> _enemies = new List<AgentShootController>();
+    private AgentShootController[] _enemies = new AgentShootController[2];
 
     private SpawnProjectiles _projectiles;
 
-    // for shooting
     private bool _shooting = false;
+    private bool _crouching = true;
+
+    // for shooting
     private int _currentNumOfShots = 0;
     private int _totalNumberOfShots = 0;
+
     private CharacterAction _previousActionName = CharacterAction.Idle;
     private CharacterAction _currentActionName = CharacterAction.Idle;
 
@@ -74,12 +77,27 @@ public class AutoShootController : MonoBehaviour
             if (_shooting != value)
             {
                 _shooting = value;
-                Animator.SetBool("Shooting", value);
+                Crouching = !value;
+                Animator.SetBool("Shooting", _shooting);
             }
         }
     }
 
-    public bool Crouching { get; set; }
+    public bool Crouching
+    {
+        get
+        {
+            return _crouching;
+        }
+        set
+        {
+            if (_crouching != value)
+            {
+                _crouching = value;
+                Animator.SetBool("Crouching", _crouching);
+            }
+        }
+    }
 
     public Vector3 ShootingDirection { get; set; }
 
@@ -115,21 +133,6 @@ public class AutoShootController : MonoBehaviour
     {
 
     }
-
-    #region Private Helpers
-
-    void Rotate(float angle, float totalTime)
-    {
-        transform.Rotate(Vector3.up, Time.deltaTime * angle / totalTime );
-    }
-
-    void ShootForward()
-    {
-        ShootingDirection = transform.forward;
-        Shooting = true;
-    }
-
-    #endregion
 
     #region Public Helpers
 
@@ -178,7 +181,7 @@ public class AutoShootController : MonoBehaviour
 
         // more chance of shooting if target is standing up
 
-        for (i = 0; i < _enemies.Count; i++)
+        for (i = 0; i < _enemies.Length; i++)
         {
             probs[i] = _enemies[i].Crouching ? probs[i] : probs[i] + oppAddProb;
         }
@@ -213,10 +216,6 @@ public class AutoShootController : MonoBehaviour
             int numOfShots = (int)(UnityEngine.Random.value * 3) + 1;
             Vector3 target = _enemies[i].transform.position;
             StartShooting(target, numOfShots, nextAction);
-        }
-        else
-        {
-            // controller.StartCrouching();
         }
     }
 

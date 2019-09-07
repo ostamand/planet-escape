@@ -6,6 +6,11 @@ public class AgentShootController : MonoBehaviour
 {
 
     private bool _crouching = false;
+
+
+
+
+
     public bool Crouching
     {
         get
@@ -17,6 +22,25 @@ public class AgentShootController : MonoBehaviour
             _crouching = value;
         }
     }
+
+    public void StartCrouching()
+    {
+        if (!Crouching) { return; }
+//# Animator.SetBool("Crouching", true);
+    }
+
+
+
+    void Start()
+    {
+        
+    }
+
+    void Update()
+    {
+       
+    }
+
 
 
 }
