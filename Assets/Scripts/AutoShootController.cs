@@ -1,23 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class AutoShootController : ActionCharacter
+public class AutoShootController : MonoBehaviour
 {
+    [Header("Con Properties")]
+    [SerializeField]
+    private float baseShootProb = 0.1f;
 
-    [Header("Animation Sync")]
+    [SerializeField]
+    private float baseIdleProb = 0.3f;
 
-    [Tooltip("Delay between start of animation & firing projectile.")]
-    public float delayProjectile = 0.4f;
+    [SerializeField]
+    [Tooltip("More chance of shooting if target is standing up")]
+    private float oppAddProb = 0.2f;
 
-    [Tooltip("Firing speed = total animation time")]
-    public float fireSpeed = 1.167f;
+    [SerializeField]
+    [Tooltip("More change of doing something if we were idle before")]
+    private float idleBeforeProb = 0.2f;
+
+    [Space(10)]
+
+    [SerializeField]
+    private List<AgentShootController> _enemies = new List<AgentShootController>();
 
     private SpawnProjectiles _projectiles;
+
+    // for shooting
     private bool _shooting = false;
-    private float _timeToFire = 0;
+    private int _currentNumOfShots = 0;
+    private int _totalNumberOfShots = 0;
+    private CharacterAction _previousActionName = CharacterAction.Idle;
+    private CharacterAction _currentActionName = CharacterAction.Idle;
 
     #region Public Properties
+
+    public CharacterAction PreviousActionName
+    {
+        get
+        {
+            return _previousActionName;
+        }
+        set
+        {
+            _previousActionName = value;
+        }
+    }
+
+    public CharacterAction CurrentActionName
+    {
+        get
+        {
+            return _currentActionName;
+        }
+        set
+        {
+            _previousActionName = _currentActionName;
+            _currentActionName = value;
+        }
+    }
+
+    public Animator Animator { get; private set; }
 
     public bool Shooting
     {
@@ -31,58 +75,48 @@ public class AutoShootController : ActionCharacter
             {
                 _shooting = value;
                 Animator.SetBool("Shooting", value);
-                if (_shooting)
-                {
-                    _timeToFire = Time.time + delayProjectile;
-                }
             }
         }
     }
 
+    public bool Crouching { get; set; }
+
     public Vector3 ShootingDirection { get; set; }
+
+    public enum CharacterAction { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
+
+    public static Dictionary<CharacterAction, string> ActionLabels = new Dictionary<CharacterAction, string>
+    {
+        { CharacterAction.Shoot0, "Shoot0"},
+        { CharacterAction.Shoot1, "Shoot1"},
+        { CharacterAction.Idle, "Idle"}
+    };
+
+    public static Dictionary<int, CharacterAction> IndexToAction = new Dictionary<int, CharacterAction>
+    {
+        { 0, CharacterAction.Shoot0},
+        { 1, CharacterAction.Shoot1},
+        { 2, CharacterAction.Idle}
+    };
 
     #endregion
 
     void Start()
 	{
-        Setup();
         _projectiles = GetComponent<SpawnProjectiles>();
+        Animator = GetComponent<Animator>();
+
+        Crouching = true;
+
+        StartCrouching();
     }
 
     void Update()
-    { 
-        ProcessActions();
-        ProcessFiring();
+    {
+
     }
 
     #region Private Helpers
-
-    void ActionUntilRelease(KeyCode key, Action<bool> setState)
-    {
-        if (Input.GetKeyDown(key) && !IsNotIdle())
-        {
-            setState(true);
-        }
-        else if (Input.GetKeyUp(key))
-        {
-            setState(false);
-        }
-    }
-
-    bool IsNotIdle()
-    {
-        return _crouching;
-    }
-
-    void ProcessFiring()
-    {
-        if (!_shooting) { return; }
-        if (Time.time > _timeToFire)
-        {
-            _projectiles.Fire(ShootingDirection);
-            _timeToFire = Time.time + fireSpeed + delayProjectile;
-        }
-    }
 
     void Rotate(float angle, float totalTime)
     {
@@ -95,37 +129,97 @@ public class AutoShootController : ActionCharacter
         Shooting = true;
     }
 
-    void ShootTarget(Vector3 target)
-    {
-        ShootingDirection = (target - transform.position).normalized;
-        Shooting = true;
-    }
-
     #endregion
 
     #region Public Helpers
 
-    public void StartShooting(Vector3 target, int numberOfShots, string actionName)
+    public void ShootProjectile()
     {
-        List<TimedStep> steps = new List<TimedStep>
-        {
-            new TimedStep(deltaTime => Crouching = true, 1.0f),
-            new TimedStep(deltaTime => Crouching = false, 0.75f),
-            new TimedStep(deltaTime => ShootTarget(target), fireSpeed * numberOfShots),
-            new TimedStep(deltaTime => Shooting = false, 0.2f),
-            new TimedStep(deltaTime => Crouching = true, 0f)
-        };
-        AddTimedAction(steps, actionName);
+        if (!_shooting) { return; }
+        _projectiles.Fire(ShootingDirection);
+        _currentNumOfShots++;
+        Shooting &= _currentNumOfShots < _totalNumberOfShots;
+        Crouching = !Shooting;
     }
 
-    public void StartCrouching(float totalTime)
+    public void StartShooting(Vector3 target, int numberOfShots, CharacterAction actionName)
     {
-        List<TimedStep> steps = new List<TimedStep>
+        CurrentActionName = actionName;
+
+        ShootingDirection = (target - transform.position).normalized;
+        _totalNumberOfShots = numberOfShots;
+        _currentNumOfShots = 0;
+
+        // will trigger start of animation
+        Shooting = true;
+    }
+
+    public void StartCrouching()
+    {
+        if (!Crouching) { return; }
+        Animator.SetBool("Crouching", true);
+    }
+
+    public void CanDoAction()
+    {
+        int i;
+
+        // shoot cop 0, shoot cop 1, do nothing
+
+        float[] probs = { baseShootProb, baseShootProb, baseIdleProb };
+
+        // more chance of doing something if we were idle before
+
+        if (PreviousActionName == CharacterAction.Idle)
         {
-            new TimedStep(deltaTime => Crouching = true, totalTime)
-        };
-        AddTimedAction(steps, ActionLabels[Action.Idle]);
+            probs[1] += idleBeforeProb;
+            probs[2] += idleBeforeProb;
+        }
+
+        // more chance of shooting if target is standing up
+
+        for (i = 0; i < _enemies.Count; i++)
+        {
+            probs[i] = _enemies[i].Crouching ? probs[i] : probs[i] + oppAddProb;
+        }
+
+        // get the actual next action
+
+        float total = probs.Sum();
+        probs = probs.Select(f => f / total).ToArray();
+
+        for (i = 1; i < probs.Length; i++)
+        {
+            probs[i] = probs[i] + probs[i - 1];
+        }
+
+        float choice = UnityEngine.Random.value;
+        float lowerBound = 0f;
+        CharacterAction nextAction = CharacterAction.Idle;
+
+        for (i = 0; i < ActionLabels.Count; i++)
+        {
+            if (choice >= lowerBound && choice < probs[i])
+            {
+                nextAction = IndexToAction[i];
+                break;
+            }
+        }
+
+        // apply the action
+
+        if (nextAction == CharacterAction.Shoot0) // || nextAction == Character.Action.Shoot1
+        {
+            int numOfShots = (int)(UnityEngine.Random.value * 3) + 1;
+            Vector3 target = _enemies[i].transform.position;
+            StartShooting(target, numOfShots, nextAction);
+        }
+        else
+        {
+            // controller.StartCrouching();
+        }
     }
 
     #endregion
+
 }
