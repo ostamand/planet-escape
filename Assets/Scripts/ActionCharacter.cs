@@ -67,6 +67,7 @@ public abstract class ActionCharacter : MonoBehaviour
     public virtual void RunAction(Action action)
     {
 
+
     }
 
     #endregion

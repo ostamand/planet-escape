@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 603536338919384825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7df85688fcedb4780b9d577ceb38fcd0, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ea1cb33a62584f8386dc4d69757e12d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayProjectile: 0.4
-  fireSpeed: 1.167
 --- !u!1001 &604797371248190795
 PrefabInstance:
   m_ObjectHideFlags: 0

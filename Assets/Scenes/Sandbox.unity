@@ -650,7 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bde05852a5ddd4e2caae55683f79660e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayProjectile: 0.4
+  delayProjectile: 0.255
   fireSpeed: 1.167
 --- !u!1 &1354077845
 GameObject:

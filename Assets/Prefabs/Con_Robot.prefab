@@ -3705,7 +3705,7 @@ GameObject:
   - component: {fileID: 3969860227441841620}
   - component: {fileID: 3969860227441841621}
   - component: {fileID: 384661715}
-  - component: {fileID: 1298202019}
+  - component: {fileID: 1298202018}
   m_Layer: 0
   m_Name: Con_Robot
   m_TagString: Untagged
@@ -3782,7 +3782,7 @@ MonoBehaviour:
   firePoint: {fileID: 2765088290170932511}
   vfx:
   - {fileID: 6158543489607830359, guid: df4c7a5c0eb7041a1ad57f53e248b0c5, type: 3}
---- !u!114 &1298202019
+--- !u!114 &1298202018
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3791,10 +3791,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3969860227441841610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7df85688fcedb4780b9d577ceb38fcd0, type: 3}
+  m_Script: {fileID: 11500000, guid: bde05852a5ddd4e2caae55683f79660e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayProjectile: 0.4
+  delayProjectile: 0.255
   fireSpeed: 1.167
 --- !u!1 &3969860227447745922
 GameObject:

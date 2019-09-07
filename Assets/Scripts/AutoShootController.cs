@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class AutoShootController : ActionCharacter
 {
-    // delay between start of animation & firing projectile
+
+    [Header("Animation Sync")]
+
+    [Tooltip("Delay between start of animation & firing projectile.")]
     public float delayProjectile = 0.4f;
 
-    // firing speed = total animation time
+    [Tooltip("Firing speed = total animation time")]
     public float fireSpeed = 1.167f;
 
     private SpawnProjectiles _projectiles;
-
     private bool _shooting = false;
-   
     private float _timeToFire = 0;
 
     #region Public Properties
@@ -104,11 +105,6 @@ public class AutoShootController : ActionCharacter
 
     #region Public Helpers
 
-    public override void RunAction(Action action)
-    {
-        base.RunAction(action);
-    }
-
     public void StartShooting(Vector3 target, int numberOfShots, string actionName)
     {
         List<TimedStep> steps = new List<TimedStep>
@@ -120,6 +116,15 @@ public class AutoShootController : ActionCharacter
             new TimedStep(deltaTime => Crouching = true, 0f)
         };
         AddTimedAction(steps, actionName);
+    }
+
+    public void StartCrouching(float totalTime)
+    {
+        List<TimedStep> steps = new List<TimedStep>
+        {
+            new TimedStep(deltaTime => Crouching = true, totalTime)
+        };
+        AddTimedAction(steps, ActionLabels[Action.Idle]);
     }
 
     #endregion
