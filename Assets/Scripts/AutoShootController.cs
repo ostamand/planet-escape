@@ -36,11 +36,13 @@ public class AutoShootController : MonoBehaviour
     [Tooltip("Distance wrt target when target is missed")]
     private float missNoise = 2.0f;
 
-
     [Space(10)]
 
     [SerializeField]
     private GameObject[] enemies = new GameObject[1];
+
+    [SerializeField]
+    private BoxCollider hitCollider;
 
     private CharacterManager character;
     private CharacterManager currentTarget = null;
@@ -138,12 +140,6 @@ public class AutoShootController : MonoBehaviour
     void Rotate(float angle, float totalTime)
     {
         transform.Rotate(Vector3.up, Time.deltaTime * angle / totalTime );
-    }
-
-    void ShootForward()
-    {
-        ShootingDirection = transform.forward;
-        Shooting = true;
     }
 
     #endregion

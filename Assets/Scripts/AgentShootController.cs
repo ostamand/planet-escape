@@ -17,9 +17,15 @@ public class AgentShootController : MonoBehaviour
     [Tooltip("Shows a light when an action is available to the agent.")]
     private bool _showActionLight = true;
 
-    [Space(5)]
+    [Header("Collider")]
 
-    [Header("Agent Properties")]
+    [SerializeField]
+    private BoxCollider idleCollider;
+
+    [SerializeField]
+    private BoxCollider crouchingCollider;
+
+    [Space(5)]
 
     private bool _canDoAction = true;
 
@@ -105,6 +111,14 @@ public class AgentShootController : MonoBehaviour
                     CurrentAction = AgentAction.Crouching;
                     character.Shooting = false;
                     SetAnimators();
+
+                    crouchingCollider.enabled = true;
+                    idleCollider.enabled = false;
+                }
+                else
+                {
+                    crouchingCollider.enabled = false;
+                    idleCollider.enabled = true;
                 }
             }
         }

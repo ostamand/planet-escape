@@ -440,21 +440,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1477517240, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
-      propertyPath: m_BoundingSphereOverride.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1477517240, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
-      propertyPath: m_BoundingSphereOverride.y
-      value: 1e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 1477517240, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
-      propertyPath: m_BoundingSphereOverride.z
-      value: 5.513e-42
-      objectReference: {fileID: 0}
-    - target: {fileID: 1477517240, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
-      propertyPath: m_BoundingSphereOverride.w
-      value: 1.05e-43
+    - target: {fileID: 1827571552523344678, guid: 3f54b5d32a48d48be866c7ea31ab998a,
+        type: 3}
+      propertyPath: hitCollider
+      value: 
+      objectReference: {fileID: 1058314291}
+    - target: {fileID: 1058314289, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
+      propertyPath: m_Name
+      value: Hit Collider
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f54b5d32a48d48be866c7ea31ab998a, type: 3}
@@ -671,6 +664,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4923253518902179203, guid: 1568dc2d7d8c342cdb1b9e3a61267cef,
     type: 3}
   m_PrefabInstance: {fileID: 1545759151}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1058314291 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 1058314291, guid: 3f54b5d32a48d48be866c7ea31ab998a,
+    type: 3}
+  m_PrefabInstance: {fileID: 262863883}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1191685209
 PrefabInstance:

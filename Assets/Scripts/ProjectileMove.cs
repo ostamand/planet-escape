@@ -52,7 +52,7 @@ public class ProjectileMove : MonoBehaviour
             character.TakeDamage(Damage);
             Debug.Log(character.Health);
         }
-        
+
         Destroy(gameObject);
     }
 
