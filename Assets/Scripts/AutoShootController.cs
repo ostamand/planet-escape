@@ -25,6 +25,8 @@ public class AutoShootController : MonoBehaviour
     [SerializeField]
     private AgentShootController[] _enemies = new AgentShootController[2];
 
+    public enum CharacterAction { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
+
     private SpawnProjectiles _projectiles;
 
     private bool _shooting = false;
@@ -100,9 +102,7 @@ public class AutoShootController : MonoBehaviour
     }
 
     public Vector3 ShootingDirection { get; set; }
-
-    public enum CharacterAction { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
-
+ 
     public static Dictionary<CharacterAction, string> ActionLabels = new Dictionary<CharacterAction, string>
     {
         { CharacterAction.Shoot0, "Shoot0"},
