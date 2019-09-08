@@ -2003,14 +2003,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bde05852a5ddd4e2caae55683f79660e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseShootProb: 0.1
-  baseIdleProb: 0.3
-  oppProb: 0.2
+  baseShootProb: 0.3
+  baseIdleProb: 0.2
+  oppProb: 0.3
   idleBeforeProb: 0.2
   hitCrouchingProb: 0.2
   hitIdleProb: 0.8
+  missNoise: 0.8
   enemies:
-  - {fileID: 0}
   - {fileID: 0}
 --- !u!1 &4923253518945966673
 GameObject:

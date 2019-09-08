@@ -161,9 +161,6 @@ public class AgentShootController : MonoBehaviour
                 Shooting = true;
             }
        }
-
-
-
     }
 
     void SetAnimators()

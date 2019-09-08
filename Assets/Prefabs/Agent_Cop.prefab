@@ -87,7 +87,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0.296875, z: 0.0546875, w: -0.078125}
+  m_BoundingSphereOverride: {x: 0.65234375, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1444,9 +1444,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2384431020139064499}
   - component: {fileID: 8671401034839696125}
-  - component: {fileID: 2384431020139064500}
   - component: {fileID: 3546609391534301072}
   - component: {fileID: 1827571552523344678}
+  - component: {fileID: 494843658}
   m_Layer: 0
   m_Name: Agent_Cop
   m_TagString: Untagged
@@ -1509,20 +1509,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!64 &2384431020139064500
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2384431020139064498}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 4300008, guid: 4cf8e35218228c74e87ae151b5dc4516, type: 3}
 --- !u!114 &3546609391534301072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1552,6 +1538,19 @@ MonoBehaviour:
   _debugMode: 1
   _actionLight: {fileID: 1477517240}
   _showActionLight: 1
+--- !u!65 &494843658
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2384431020139064498}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5418094, y: 1.8439972, z: 0.32003498}
+  m_Center: {x: -0.0022242367, y: 0.922264, z: -0.0066666603}
 --- !u!1 &2384431020209135715
 GameObject:
   m_ObjectHideFlags: 0

@@ -32,12 +32,18 @@ public class AutoShootController : MonoBehaviour
     [Tooltip("Chance hit when enemy is not crouching")]
     private float hitIdleProb = 0.8f;
 
+    [SerializeField]
+    [Tooltip("Distance wrt target when target is missed")]
+    private float missNoise = 2.0f;
+
+
     [Space(10)]
 
     [SerializeField]
     private GameObject[] enemies = new GameObject[1];
 
     private CharacterManager character;
+    private CharacterManager currentTarget = null;
 
     // for shooting
     private int _currentNumOfShots = 0;
@@ -163,18 +169,37 @@ public class AutoShootController : MonoBehaviour
     public void ShootProjectile()
     {
         if (!character.Shooting) { return; }
-        projectiles.Fire(ShootingDirection, character.WeaponDamage);
+
+        // calculate shooting direction
+
+        float hitProb = currentTarget.Crouching ? hitCrouchingProb : hitIdleProb;
+
+        int miss = 1 - Convert.ToInt16(UnityEngine.Random.Range(0.0f, 1.0f) <= hitProb);
+
+        Vector3 noise = new Vector3(
+            miss * missNoise * UnityEngine.Random.Range(-1.0f, 1.0f),
+            miss * missNoise * UnityEngine.Random.Range(-1.0f, 1.0f),
+            miss * missNoise * UnityEngine.Random.Range(-1.0f, 1.0f));
+
+        Vector3 target = (currentTarget.gameObject.transform.position + noise - transform.position).normalized;
+
+        projectiles.Fire(target, character.WeaponDamage);
+
         _currentNumOfShots++;
+
         Shooting &= _currentNumOfShots < _totalNumberOfShots;
+
         Crouching = !Shooting;
     }
 
-    public void StartShooting(Vector3 target, int numberOfShots, CharacterAction actionName)
+    public void StartShooting(CharacterManager enemy, int numberOfShots, CharacterAction actionName)
     {
         CurrentAction = actionName;
-        ShootingDirection = (target - transform.position).normalized;
+        currentTarget = enemy;
+
         _totalNumberOfShots = numberOfShots;
-         _currentNumOfShots = 0;
+        _currentNumOfShots = 0;
+
         // will trigger start of animation
         Shooting = true;
     }
@@ -215,7 +240,7 @@ public class AutoShootController : MonoBehaviour
 
         for (i = 1; i < probs.Length; i++)
         {
-            probs[i] = probs[i] + probs[i - 1];
+            probs[i] = probs[i] + probs[i -1];
         }
 
         float choice = UnityEngine.Random.value;
@@ -235,8 +260,7 @@ public class AutoShootController : MonoBehaviour
         if (nextAction == CharacterAction.Shoot0) // || nextAction == Character.Action.Shoot1
         {
             int numOfShots = (int)(UnityEngine.Random.value * 3) + 1;
-            Vector3 target = enemies[i].transform.position;
-            StartShooting(target, numOfShots, nextAction);
+            StartShooting(enemies[i].GetComponent<CharacterManager>(), numOfShots, nextAction);
         }
     }
 
