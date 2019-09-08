@@ -77,8 +77,14 @@ public class AgentShootController : MonoBehaviour
                 if (_debugMode)
                 {
                     _actionLight.enabled = _canDoAction;
+
+                    if (_canDoAction)
+                    {
+                        Shooting = false;
+                        Crouching = false;
+                        SetAnimators();
+                    }
                 }
-              
             }
         }
     }
@@ -98,9 +104,9 @@ public class AgentShootController : MonoBehaviour
                 {
                     CanDoAction = false;
                     CurrentAction = AgentAction.Crouching;
+                    _shooting = false;
+                    SetAnimators();
                 }
-                _shooting = !_crouching;
-                SetAnimators();
             }
         }
     }
@@ -114,13 +120,13 @@ public class AgentShootController : MonoBehaviour
         set
         {
             _shooting = value;
-            if (_crouching)
+            if (_shooting)
             {
                 CanDoAction = false;
                 CurrentAction = AgentAction.Shoot0;
+                _crouching = false;
+                SetAnimators();
             }
-            _crouching = !_shooting;
-            SetAnimators();
         }
     }
 
@@ -132,6 +138,8 @@ public class AgentShootController : MonoBehaviour
     {
         Animator = GetComponent<Animator>();
         _actionLight.enabled = false;
+
+        Crouching = true;
     }
 
     void Update()
@@ -141,12 +149,16 @@ public class AgentShootController : MonoBehaviour
             // Check input from keyboard for all possible actions
 
             // Crouching: Arrow down
-            Crouching |= Input.GetKeyDown(KeyCode.DownArrow);
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                Crouching = true;
+            }
 
-            // Shoot0: Space
-            Shooting |= Input.GetKeyDown(KeyCode.Space);
 
-
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Shooting = true;
+            }
        }
 
 
@@ -166,6 +178,11 @@ public class AgentShootController : MonoBehaviour
     public void DoAction()
     {
         CanDoAction = true;
+
+        // clear current action if needed
+
+
+
         // TODO set action thru agent
     }
 
