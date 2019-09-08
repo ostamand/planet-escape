@@ -44,6 +44,12 @@ public class ProjectileMove : MonoBehaviour
         {
             Instantiate(hitPrefab, pos, rot);
         }
+
+        CharacterManager character = collision.gameObject.GetComponent<CharacterManager>();
+        character.TakeDamage(Damage);
+
+        Debug.Log(character.Health);
+
         Destroy(gameObject);
     }
 

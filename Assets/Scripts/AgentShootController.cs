@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterManager))]
 public class AgentShootController : MonoBehaviour
 {
-
     [Header("Debug")]
 
     [SerializeField]
@@ -22,14 +22,14 @@ public class AgentShootController : MonoBehaviour
     [Header("Agent Properties")]
 
     private bool _canDoAction = true;
-    private bool _crouching = false;
-    private bool _shooting = false;
 
     // all available actions to the agentxe
     public enum AgentAction { Shoot0 = 0, ShootBarrel0 = 1, Crouching = 2, Idle = 3}
 
-    private AgentAction _currentAction = AgentAction.Idle;
-    private AgentAction _previousAction = AgentAction.Idle;
+    private CharacterManager character;
+
+    private AgentAction currentAction = AgentAction.Idle;
+    private AgentAction previousAction = AgentAction.Idle;
 
     #region Public Properties
 
@@ -39,14 +39,14 @@ public class AgentShootController : MonoBehaviour
     {
         get
         {
-            return _currentAction;
+            return currentAction;
         }
         set
         {
-            if (value != _currentAction)
+            if (value != currentAction)
             {
-                _previousAction = _currentAction;
-                _currentAction = value;
+                previousAction = currentAction;
+                currentAction = value;
             }
         }
     }
@@ -55,11 +55,11 @@ public class AgentShootController : MonoBehaviour
     {
         get
         {
-            return _previousAction;
+            return previousAction;
         }
         set
         {
-            _previousAction = value;
+            previousAction = value;
         }
     }
 
@@ -93,18 +93,18 @@ public class AgentShootController : MonoBehaviour
     {
         get
         {
-            return _crouching;
+            return character.Crouching;
         }
         set
         {
-            if (value != _crouching)
+            if (value != character.Crouching)
             {
-                _crouching = value;
-                if (_crouching)
+                character.Crouching = value;
+                if (character.Crouching)
                 {
                     CanDoAction = false;
                     CurrentAction = AgentAction.Crouching;
-                    _shooting = false;
+                    character.Shooting = false;
                     SetAnimators();
                 }
             }
@@ -115,16 +115,16 @@ public class AgentShootController : MonoBehaviour
     {
         get
         {
-            return _shooting;
+            return character.Shooting;
         }
         set
         {
-            _shooting = value;
-            if (_shooting)
+            character.Shooting = value;
+            if (character.Shooting)
             {
                 CanDoAction = false;
                 CurrentAction = AgentAction.Shoot0;
-                _crouching = false;
+                character.Crouching = false;
                 SetAnimators();
             }
         }
@@ -136,6 +136,7 @@ public class AgentShootController : MonoBehaviour
 
     void Start()
     {
+        character = GetComponent<CharacterManager>();
         Animator = GetComponent<Animator>();
         _actionLight.enabled = false;
 
@@ -167,8 +168,8 @@ public class AgentShootController : MonoBehaviour
 
     void SetAnimators()
     {
-        Animator.SetBool("Shooting", _shooting) ;
-        Animator.SetBool("Crouching", _crouching);
+        Animator.SetBool("Shooting", character.Shooting) ;
+        Animator.SetBool("Crouching", character.Crouching);
     }
 
     #endregion

@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class SpawnProjectiles : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject firePoint;
 
-    public GameObject firePoint;
-    public List<GameObject> vfx = new List<GameObject>();
+    [SerializeField]
+    private List<GameObject> vfx = new List<GameObject>();
 
-    private GameObject effEfectToSpawn;
+    [SerializeField]
+    private float maxDuration = 5f;
+
+
+    private GameObject effectToSpawn;
 
     private void Start()
     {
-        effEfectToSpawn = vfx[0];
+        effectToSpawn = vfx[0];
     }
 
     public void Fire(Vector3 direction, int damage)
@@ -23,8 +29,8 @@ public class SpawnProjectiles : MonoBehaviour
     private void SpawnVFX(Vector3 direction, int damage)
     {
         if (firePoint == null) { return; }
-        GameObject bullet = Instantiate(effEfectToSpawn, firePoint.transform.position, Quaternion.identity);
-        Destroy(bullet, 5f);
+        GameObject bullet = Instantiate(effectToSpawn, firePoint.transform.position, Quaternion.identity);
+        Destroy(bullet, maxDuration);
         bullet.GetComponent<ProjectileMove>().SetDirectionDamage(direction, damage);
     }
 }

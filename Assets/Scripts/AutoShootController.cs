@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterManager))]
 public class AutoShootController : MonoBehaviour
 {
     [Header("Action Properties")]
@@ -31,28 +32,19 @@ public class AutoShootController : MonoBehaviour
     [Tooltip("Chance hit when enemy is not crouching")]
     private float hitIdleProb = 0.8f;
 
-    [SerializeField]
-    private int weaponDamage = 1;
-
-    [SerializeField]
-    private int totalHealth = 100;
-
     [Space(10)]
 
     [SerializeField]
-    private AgentShootController[] _enemies = new AgentShootController[2];
+    private GameObject[] enemies = new GameObject[1];
 
-    public enum CharacterAction { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
-
-    private SpawnProjectiles _projectiles;
-
-    private bool _shooting = false;
-    private bool _crouching = true;
+    private CharacterManager character;
 
     // for shooting
     private int _currentNumOfShots = 0;
     private int _totalNumberOfShots = 0;
+    private SpawnProjectiles projectiles;
 
+    public enum CharacterAction { Shoot0 = 0, Shoot1 = 1, Idle = 2 }
     private CharacterAction _previousAction = CharacterAction.Idle;
     private CharacterAction _currentAction = CharacterAction.Idle;
 
@@ -88,15 +80,15 @@ public class AutoShootController : MonoBehaviour
     {
         get
         {
-            return _shooting;
+            return character.Shooting;
         }
         set
         {
-            if (_shooting != value)
+            if (character.Shooting != value)
             {
-                _shooting = value;
+                character.Shooting = value;
                 Crouching = !value;
-                Animator.SetBool("Shooting", _shooting);
+                Animator.SetBool("Shooting", character.Shooting);
             }
         }
     }
@@ -105,14 +97,14 @@ public class AutoShootController : MonoBehaviour
     {
         get
         {
-            return _crouching;
+            return character.Crouching;
         }
         set
         {
-            if (_crouching != value)
+            if (character.Crouching != value)
             {
-                _crouching = value;
-                Animator.SetBool("Crouching", _crouching);
+                character.Crouching = value;
+                Animator.SetBool("Crouching", character.Crouching);
             }
         }
     }
@@ -152,7 +144,8 @@ public class AutoShootController : MonoBehaviour
 
     void Start()
 	{
-        _projectiles = GetComponent<SpawnProjectiles>();
+        projectiles = GetComponent<SpawnProjectiles>();
+        character = GetComponent<CharacterManager>();
         Animator = GetComponent<Animator>();
 
         Crouching = true;
@@ -169,8 +162,8 @@ public class AutoShootController : MonoBehaviour
 
     public void ShootProjectile()
     {
-        if (!_shooting) { return; }
-        _projectiles.Fire(ShootingDirection, weaponDamage);
+        if (!character.Shooting) { return; }
+        projectiles.Fire(ShootingDirection, character.WeaponDamage);
         _currentNumOfShots++;
         Shooting &= _currentNumOfShots < _totalNumberOfShots;
         Crouching = !Shooting;
@@ -210,9 +203,9 @@ public class AutoShootController : MonoBehaviour
 
         // more chance of shooting if target is standing up
 
-        for (i = 0; i < _enemies.Length; i++)
+        for (i = 0; i < enemies.Length; i++)
         {
-            probs[i] = _enemies[i].Crouching ? probs[i] : probs[i] + oppProb;
+            probs[i] = enemies[i].GetComponent<CharacterManager>().Crouching ? probs[i] : probs[i] + oppProb;
         }
 
         // get the actual next action
@@ -242,11 +235,10 @@ public class AutoShootController : MonoBehaviour
         if (nextAction == CharacterAction.Shoot0) // || nextAction == Character.Action.Shoot1
         {
             int numOfShots = (int)(UnityEngine.Random.value * 3) + 1;
-            Vector3 target = _enemies[i].transform.position;
+            Vector3 target = enemies[i].transform.position;
             StartShooting(target, numOfShots, nextAction);
         }
     }
 
     #endregion
-
 }

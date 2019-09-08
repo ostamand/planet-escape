@@ -1898,7 +1898,8 @@ GameObject:
   - component: {fileID: 4923253518902179203}
   - component: {fileID: 4923253518902179202}
   - component: {fileID: 8306095846805018756}
-  - component: {fileID: 8306095846091693557}
+  - component: {fileID: 1880814110}
+  - component: {fileID: 1880814113}
   m_Layer: 0
   m_Name: Auto_Con
   m_TagString: Untagged
@@ -1913,7 +1914,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4923253518902179229}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 4.147403, y: -0.6676732, z: 3.486302}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1975,7 +1976,22 @@ MonoBehaviour:
   firePoint: {fileID: 6132423901046598984}
   vfx:
   - {fileID: 6158543489607830359, guid: df4c7a5c0eb7041a1ad57f53e248b0c5, type: 3}
---- !u!114 &8306095846091693557
+  maxDuration: 5
+--- !u!114 &1880814110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4923253518902179229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e104596db87472daa946a2eaab03d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDamage: 10
+  totalHealth: 100
+--- !u!114 &1880814113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1989,9 +2005,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseShootProb: 0.1
   baseIdleProb: 0.3
-  oppAddProb: 0.2
+  oppProb: 0.2
   idleBeforeProb: 0.2
-  _enemies:
+  hitCrouchingProb: 0.2
+  hitIdleProb: 0.8
+  enemies:
+  - {fileID: 0}
   - {fileID: 0}
 --- !u!1 &4923253518945966673
 GameObject:
