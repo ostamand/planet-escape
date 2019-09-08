@@ -46,10 +46,13 @@ public class ProjectileMove : MonoBehaviour
         }
 
         CharacterManager character = collision.gameObject.GetComponent<CharacterManager>();
-        character.TakeDamage(Damage);
 
-        Debug.Log(character.Health);
-
+        if(character != null)
+        {
+            character.TakeDamage(Damage);
+            Debug.Log(character.Health);
+        }
+        
         Destroy(gameObject);
     }
 

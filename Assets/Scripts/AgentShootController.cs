@@ -82,7 +82,6 @@ public class AgentShootController : MonoBehaviour
                     {
                         Shooting = false;
                         Crouching = false;
-                        SetAnimators();
                     }
                 }
             }
@@ -150,16 +149,18 @@ public class AgentShootController : MonoBehaviour
             // Check input from keyboard for all possible actions
 
             // Crouching: Arrow down
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            if (Input.GetKey(KeyCode.DownArrow))
             {
                 Crouching = true;
             }
-
-
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
             {
                 Shooting = true;
             }
+       }
+       if (CanDoAction)
+       {
+           SetAnimators();
        }
     }
 
