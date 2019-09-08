@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class AutoShootController : MonoBehaviour
 {
-    [Header("Con Properties")]
+    [Header("Action Properties")]
+
     [SerializeField]
     private float baseShootProb = 0.1f;
 
@@ -14,11 +15,27 @@ public class AutoShootController : MonoBehaviour
 
     [SerializeField]
     [Tooltip("More chance of shooting if target is standing up")]
-    private float oppAddProb = 0.2f;
+    private float oppProb = 0.2f;
 
     [SerializeField]
     [Tooltip("More change of doing something if we were idle before")]
     private float idleBeforeProb = 0.2f;
+
+    [Header("Stats")]
+
+    [SerializeField]
+    [Tooltip("Chance hit when enemy is crouching")]
+    private float hitCrouchingProb = 0.2f;
+
+    [SerializeField]
+    [Tooltip("Chance hit when enemy is not crouching")]
+    private float hitIdleProb = 0.8f;
+
+    [SerializeField]
+    private int weaponDamage = 1;
+
+    [SerializeField]
+    private int totalHealth = 100;
 
     [Space(10)]
 
@@ -36,33 +53,32 @@ public class AutoShootController : MonoBehaviour
     private int _currentNumOfShots = 0;
     private int _totalNumberOfShots = 0;
 
-    private CharacterAction _previousActionName = CharacterAction.Idle;
-    private CharacterAction _currentActionName = CharacterAction.Idle;
+    private CharacterAction _previousAction = CharacterAction.Idle;
+    private CharacterAction _currentAction = CharacterAction.Idle;
 
     #region Public Properties
 
-    public CharacterAction PreviousActionName
+    public CharacterAction PreviousAction
     {
         get
         {
-            return _previousActionName;
+            return _previousAction;
         }
         set
         {
-            _previousActionName = value;
+            _previousAction = value;
         }
     }
 
-    public CharacterAction CurrentActionName
+    public CharacterAction CurrentAction
     {
         get
         {
-            return _currentActionName;
+            return _currentAction;
         }
         set
         {
-            _previousActionName = _currentActionName;
-            _currentActionName = value;
+            _currentAction = value ;
         }
     }
 
@@ -102,7 +118,9 @@ public class AutoShootController : MonoBehaviour
     }
 
     public Vector3 ShootingDirection { get; set; }
- 
+
+    #endregion
+
     public static Dictionary<CharacterAction, string> ActionLabels = new Dictionary<CharacterAction, string>
     {
         { CharacterAction.Shoot0, "Shoot0"},
@@ -116,6 +134,19 @@ public class AutoShootController : MonoBehaviour
         { 1, CharacterAction.Shoot1},
         { 2, CharacterAction.Idle}
     };
+
+    #region Private Methods
+
+    void Rotate(float angle, float totalTime)
+    {
+        transform.Rotate(Vector3.up, Time.deltaTime * angle / totalTime );
+    }
+
+    void ShootForward()
+    {
+        ShootingDirection = transform.forward;
+        Shooting = true;
+    }
 
     #endregion
 
@@ -134,12 +165,12 @@ public class AutoShootController : MonoBehaviour
 
     }
 
-    #region Public Helpers
+    #region Public Methods
 
     public void ShootProjectile()
     {
         if (!_shooting) { return; }
-        _projectiles.Fire(ShootingDirection);
+        _projectiles.Fire(ShootingDirection, weaponDamage);
         _currentNumOfShots++;
         Shooting &= _currentNumOfShots < _totalNumberOfShots;
         Crouching = !Shooting;
@@ -147,12 +178,10 @@ public class AutoShootController : MonoBehaviour
 
     public void StartShooting(Vector3 target, int numberOfShots, CharacterAction actionName)
     {
-        CurrentActionName = actionName;
-
+        CurrentAction = actionName;
         ShootingDirection = (target - transform.position).normalized;
         _totalNumberOfShots = numberOfShots;
-        _currentNumOfShots = 0;
-
+         _currentNumOfShots = 0;
         // will trigger start of animation
         Shooting = true;
     }
@@ -171,9 +200,9 @@ public class AutoShootController : MonoBehaviour
 
         float[] probs = { baseShootProb, baseShootProb, baseIdleProb };
 
-        // more chance of doing something if we were idle before
+        // more chance of doing someoppAddif we were idle before
 
-        if (PreviousActionName == CharacterAction.Idle)
+        if (PreviousAction == CharacterAction.Idle)
         {
             probs[1] += idleBeforeProb;
             probs[2] += idleBeforeProb;
@@ -183,7 +212,7 @@ public class AutoShootController : MonoBehaviour
 
         for (i = 0; i < _enemies.Length; i++)
         {
-            probs[i] = _enemies[i].Crouching ? probs[i] : probs[i] + oppAddProb;
+            probs[i] = _enemies[i].Crouching ? probs[i] : probs[i] + oppProb;
         }
 
         // get the actual next action
@@ -210,7 +239,6 @@ public class AutoShootController : MonoBehaviour
         }
 
         // apply the action
-
         if (nextAction == CharacterAction.Shoot0) // || nextAction == Character.Action.Shoot1
         {
             int numOfShots = (int)(UnityEngine.Random.value * 3) + 1;

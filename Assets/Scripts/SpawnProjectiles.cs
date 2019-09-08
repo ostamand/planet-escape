@@ -8,27 +8,23 @@ public class SpawnProjectiles : MonoBehaviour
     public GameObject firePoint;
     public List<GameObject> vfx = new List<GameObject>();
 
-    private float _timeToFire = 0;
-    private GameObject _effectToSpawn;
-    private float _fireRate;
+    private GameObject effEfectToSpawn;
 
     private void Start()
     {
-        _effectToSpawn = vfx[0];
-        _fireRate = _effectToSpawn.GetComponent<ProjectileMove>().fireRate;
+        effEfectToSpawn = vfx[0];
     }
 
-    public void Fire(Vector3 direction)
+    public void Fire(Vector3 direction, int damage)
     {
-        SpawnVFX(direction);
+        SpawnVFX(direction, damage);
     }
 
-    private void SpawnVFX(Vector3 direction)
+    private void SpawnVFX(Vector3 direction, int damage)
     {
-        if (firePoint != null)
-        {
-            GameObject bullet = Instantiate(_effectToSpawn, firePoint.transform.position, Quaternion.identity);
-            bullet.GetComponent<ProjectileMove>().Direction = direction;
-        }
+        if (firePoint == null) { return; }
+        GameObject bullet = Instantiate(effEfectToSpawn, firePoint.transform.position, Quaternion.identity);
+        Destroy(bullet, 5f);
+        bullet.GetComponent<ProjectileMove>().SetDirectionDamage(direction, damage);
     }
 }
